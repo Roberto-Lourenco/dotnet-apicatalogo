@@ -2,36 +2,35 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace APICatalogo.Data.Configurations
+namespace APICatalogo.Data.Configurations;
+
+internal sealed class CategoryConfiguration : IEntityTypeConfiguration<Category>
 {
-    public class CategoryConfiguration : IEntityTypeConfiguration<Category>
+    public void Configure(EntityTypeBuilder<Category> builder)
     {
-        public void Configure(EntityTypeBuilder<Category> builder)
-        {
-            builder.HasKey(c => c.Id);
+        builder.HasKey(c => c.Id);
 
-            builder.Property(c => c.Name)
-                .IsRequired()
-                .HasMaxLength(100);
+        builder.Property(c => c.Name)
+            .IsRequired()
+            .HasMaxLength(100);
 
-            builder.Property(c => c.ImgUrl)
-                .IsRequired()
-                .HasMaxLength(150);
+        builder.Property(c => c.ImgUrl)
+            .IsRequired()
+            .HasMaxLength(150);
 
-            builder.HasIndex(c => c.Name)
-                .IsUnique();
+        builder.HasIndex(c => c.Name)
+            .IsUnique();
 
-            builder.Property(c => c.CreatedAt)
-                .IsRequired()
-                .HasColumnType("timestamp with time zone");
+        builder.Property(c => c.CreatedAt)
+            .IsRequired()
+            .HasColumnType("timestamp with time zone");
 
-            builder.Property(c => c.UpdatedAt)
-                .HasColumnType("timestamp with time zone");
+        builder.Property(c => c.UpdatedAt)
+            .HasColumnType("timestamp with time zone");
 
-            builder.HasMany(c => c.Products)
-                .WithOne(p => p.Category)
-                .HasForeignKey(p => p.CategoryId)
-                .OnDelete(DeleteBehavior.Cascade);
-        }
+        builder.HasMany(c => c.Products)
+            .WithOne(p => p.Category)
+            .HasForeignKey(p => p.CategoryId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
