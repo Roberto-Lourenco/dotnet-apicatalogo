@@ -71,18 +71,23 @@ APICatalogo
     ```bash
     dotnet restore
     ```
-
-4. Na raiz do projeto (onde está o arquivo .csproj), execute:
+    
+4. **Configuração do Banco de Dados:**
+   O projeto utiliza um schema personalizado chamado `core`.
+   A migration inicial (`IntialCommit`) já contém o comando para criar esse schema automaticamente.
+   
+   *Nota: Certifique-se de que o usuário do banco de dados definido no `appsettings.json` tenha permissão para criar schemas (CREATE permission).*
+5. Na raiz do projeto (onde está o arquivo .csproj), execute:
     ```bash
     dotnet ef database update
     ```
 
-5.  **Execute a aplicação:**
+6.  **Execute a aplicação:**
     ```bash
     dotnet run
     ```
 
-6.  **Acesse a URL**
+7.  **Acesse a URL**
 
 - **ISS**: `https://localhost:44328/docs` para testar os endpoints via Swagger em Dev.
 - **HTTP**: `https://localhost:5197/docs` para testar os endpoints via Swagger em Dev.
