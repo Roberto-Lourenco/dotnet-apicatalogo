@@ -19,7 +19,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<Results<Ok, ValidationProblem>> Create(
+    public async Task<Results<Created, ValidationProblem>> Create(
         CreateProductRequest dto, IValidator<CreateProductRequest> validator, CancellationToken ct)
     {
         var validationResult = await validator.ValidateAsync(dto, ct);
@@ -37,7 +37,7 @@ public class ProductController : ControllerBase
 
         await _repository.CreateAsync(product, ct);
 
-        return TypedResults.Ok();
+        return TypedResults.Created();
     }
 
     [HttpGet("{id:int}")]
