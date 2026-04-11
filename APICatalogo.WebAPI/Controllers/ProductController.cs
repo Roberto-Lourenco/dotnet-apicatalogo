@@ -19,9 +19,10 @@ public class ProductController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<Results<Created<ProductResponse>, ValidationProblem>> CreateAsync(CreateProductRequest dto, IValidator<CreateProductRequest> validator)
+    public async Task<Results<Ok, ValidationProblem>> Create(
+        CreateProductRequest dto, IValidator<CreateProductRequest> validator, CancellationToken ct)
     {
-        var validationResult = await validator.ValidateAsync(dto);
+        var validationResult = await validator.ValidateAsync(dto, ct);
 
         if (!validationResult.IsValid)
             return TypedResults.ValidationProblem(validationResult.ToDictionary());
@@ -34,25 +35,15 @@ public class ProductController : ControllerBase
             dto.AvailableQuantity,
             dto.CategoryId);
 
-        var result = await _repository.CreateAsync(product);
+        await _repository.CreateAsync(product, ct);
 
-        var response = new ProductResponse(
-            result.Id,
-            result.Name,
-            result.Price,
-            result.ImgUrl,
-            result.AvailableQuantity,
-            result.CategoryId,
-            result.CreatedAt);
-
-
-        return TypedResults.Created($"/api/products/{response.Id}", response);
+        return TypedResults.Ok();
     }
 
     [HttpGet("{id:int}")]
-    public async Task<Results<Ok<FullContentProductResponse>, ProblemHttpResult>> GetByIdAsync(int id)
+    public async Task<Results<Ok<FullContentProductResponse>, ProblemHttpResult>> GetById(int id, CancellationToken ct)
     {
-        var product = await _repository.GetByIdAsync(id);
+        var product = await _repository.GetAsync(p => p.Id == id, ct);
 
         if (product is null)
         {
@@ -77,11 +68,11 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<Results<Ok<List<GetAllProductsResponse>>, ProblemHttpResult>> GetAll()
+    public async Task<Results<Ok<List<GetAllProductsResponse>>, ProblemHttpResult>> GetAll(CancellationToken ct)
     {
-        var products =  await _repository.GetAllAsync();
+        var products =  await _repository.GetAllAsync(ct);
 
-        if (products is null || products.Count == 0)
+        if (products is null || !products.Any())
             return TypedResults.Problem(
                 statusCode: StatusCodes.Status404NotFound,
                 detail: "No products found to display."
@@ -100,7 +91,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<Results<Ok<UpdateProductResponse>, ProblemHttpResult>> UpdateAsync(int id, UpdateProductRequest dto)
+    public async Task<Results<Ok<UpdateProductResponse>, ProblemHttpResult>> Update(int id, UpdateProductRequest dto, CancellationToken ct)
     {
         if (id != dto.Id)
         {
@@ -110,7 +101,7 @@ public class ProductController : ControllerBase
                 );
         }
 
-        var currentProduct = await _repository.GetByIdAsync(id);
+        var currentProduct = await _repository.GetAsync(p => p.Id == id, ct);
 
         if (currentProduct is null)
         {
@@ -128,7 +119,7 @@ public class ProductController : ControllerBase
         currentProduct.CategoryId = dto.CategoryId ?? currentProduct.CategoryId;
         currentProduct.UpdatedAt = DateTimeOffset.UtcNow;
 
-        await _repository.UpdateAsync(currentProduct);
+        await _repository.UpdateAsync(currentProduct, ct);
 
         var response = new UpdateProductResponse(
             currentProduct.Id,
@@ -144,15 +135,17 @@ public class ProductController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
-    public async Task<Results<NoContent, ProblemHttpResult>> DeleteAsync(int id)
+    public async Task<Results<NoContent, ProblemHttpResult>> Delete(int id, CancellationToken ct)
     {
-        var productDeleted = await _repository.DeleteAsync(id);
+        var product = await _repository.GetAsync(p => p.Id == id, ct);
 
-        if (productDeleted is null)
+        if (product is null)
             return TypedResults.Problem(
                 statusCode: StatusCodes.Status404NotFound,
                 detail: $"Product with ID {id} not found."
             );
+
+        await _repository.DeleteAsync(product, ct);
 
         return TypedResults.NoContent();
     }

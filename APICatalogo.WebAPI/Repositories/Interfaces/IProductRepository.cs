@@ -2,11 +2,6 @@ using APICatalogo.Entities;
 
 namespace APICatalogo.WebAPI.Repositories.Interfaces;
 
-public interface IProductRepository
+public interface IProductRepository : IRepository<Product>
 {
-    Task<Product> CreateAsync(Product product);
-    Task<Product?> GetByIdAsync(int id);
-    Task<List<Product>> GetAllAsync();
-    Task UpdateAsync(Product product);
-    Task<Product?> DeleteAsync(int id);
 }
