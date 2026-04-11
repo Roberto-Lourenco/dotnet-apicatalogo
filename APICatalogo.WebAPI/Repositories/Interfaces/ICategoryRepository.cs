@@ -2,14 +2,8 @@ using APICatalogo.Entities;
 
 namespace APICatalogo.WebAPI.Repositories.Interfaces;
 
-public interface ICategoryRepository
+public interface ICategoryRepository : IRepository<Category>
 {
-    Task<Category> CreateAsync(Category category);
-    Task<Category?> GetByIdAsync(int id);
-    Task<Category?> GetCategoryWithProductsAsync(int id);
-    Task<List<Category>> GetAllListAsync();
-    Task UpdateAsync(Category category);
-    Task<Category?> DeleteAsync(int id);
-    Task<bool> ExistsByNameAsync(string name);
-
+    Task<Category?> GetCategoryWithProductsAsync(int id, CancellationToken ct);
+    Task<bool> ExistsByNameAsync(string name, CancellationToken ct);
 }

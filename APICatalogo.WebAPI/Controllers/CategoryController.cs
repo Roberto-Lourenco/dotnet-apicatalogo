@@ -20,13 +20,16 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<Results<Created<CategoryResponse>, ValidationProblem, ProblemHttpResult>> CreateAsync(CreateCategoryRequest dto, IValidator<CreateCategoryRequest> validator)
+    public async Task<Results<Created, ValidationProblem, ProblemHttpResult>> Create(
+        CreateCategoryRequest dto, IValidator<CreateCategoryRequest> validator, CancellationToken ct)
     {
-        var validationResult = await validator.ValidateAsync(dto);
+        var validationResult = await validator.ValidateAsync(dto, ct);
+
         if (!validationResult.IsValid)
             return TypedResults.ValidationProblem(validationResult.ToDictionary());
 
-        var exists = await _repository.ExistsByNameAsync(dto.Name);
+        var exists = await _repository.ExistsByNameAsync(dto.Name, ct);
+
         if (exists)
         {
             return TypedResults.Problem(
@@ -39,22 +42,15 @@ public class CategoryController : ControllerBase
             dto.ImgUrl
         );
 
-        var result = await _repository.CreateAsync(category);
+        await _repository.CreateAsync(category, ct);
 
-        var response = new CategoryResponse(
-            result.Id,
-            result.Name,
-            result.ImgUrl,
-            result.CreatedAt
-        );
-
-        return TypedResults.Created($"/api/categories/{response.Id}", response);
+        return TypedResults.Created();
     }
 
     [HttpGet("{id:int}")]
-    public async Task<Results<Ok<CategoryResponse>, ProblemHttpResult>> GetByIdAsync(int id)
+    public async Task<Results<Ok<CategoryResponse>, ProblemHttpResult>> GetById(int id)
     {
-        var result = await _repository.GetByIdAsync(id);
+        var result = await _repository.GetAsync(c => c.Id == id);
 
         if (result == null)
         {
@@ -77,9 +73,9 @@ public class CategoryController : ControllerBase
     [HttpGet]
     public async Task<Results<Ok<List<CategoryResponse>>, ProblemHttpResult>> GetAll()
     {
-        var categories = await _repository.GetAllListAsync();
+        var categories = await _repository.GetAllAsync();
 
-        if (categories is null || categories.Count == 0)
+        if (categories is null || !categories.Any())
         {
             return TypedResults.Problem(
                 statusCode: StatusCodes.Status404NotFound,
@@ -88,20 +84,22 @@ public class CategoryController : ControllerBase
 
         var response = categories
             .Select(category =>
-            new CategoryResponse(
-                category.Id,
-                category.Name,
-                category.ImgUrl,
-                category.CreatedAt))
-            .ToList();
+                new CategoryResponse(
+                    category.Id,
+                    category.Name,
+                    category.ImgUrl,
+                    category.CreatedAt))
+                .ToList();
 
         return TypedResults.Ok(response);
     }
 
     [HttpGet("{id}/products")]
-    public async Task<Results<Ok<GetCategoryWithProductsResponse>, ProblemHttpResult>>  GetCategoryWithProdutosAsync(int id)
+    public async Task<Results<Ok<GetCategoryWithProductsResponse>, ProblemHttpResult>> GetCategoryWithProducts(
+        int id, CancellationToken ct)
     {
-        var categories = await _repository.GetCategoryWithProductsAsync(id);
+        var categories = await _repository.GetCategoryWithProductsAsync(id, ct);
+
         if (categories is null)
         {
             return TypedResults.Problem(
@@ -134,9 +132,11 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<Results<Ok<UpdateCategoryResponse>, ValidationProblem, ProblemHttpResult>> UpdateAsync(int id, UpdateCategoryRequest dto, IValidator<UpdateCategoryRequest> validator)
+    public async Task<Results<Ok<UpdateCategoryResponse>, ValidationProblem, ProblemHttpResult>> Update(
+        int id, UpdateCategoryRequest dto, IValidator<UpdateCategoryRequest> validator, CancellationToken ct)
     {
-        var validationResult = await validator.ValidateAsync(dto);
+        var validationResult = await validator.ValidateAsync(dto, ct);
+
         if (!validationResult.IsValid)
             return TypedResults.ValidationProblem(validationResult.ToDictionary());
 
@@ -146,8 +146,8 @@ public class CategoryController : ControllerBase
                 detail: "The URL ID differs from the request body ID."
                 );
 
+        var currentCategory = await _repository.GetAsync(c => c.Id == id, ct);
 
-        var currentCategory = await _repository.GetByIdAsync(id);
         if (currentCategory is null)
         {
             return TypedResults.Problem(
@@ -155,11 +155,12 @@ public class CategoryController : ControllerBase
                 detail: $"Category with ID {id} not found."
                 );
         }
+
         currentCategory.Name = dto.Name ?? currentCategory.Name;
         currentCategory.ImgUrl = dto.ImgUrl ?? currentCategory.ImgUrl;
         currentCategory.UpdatedAt = DateTimeOffset.UtcNow;
 
-        await _repository.UpdateAsync(currentCategory);
+        await _repository.UpdateAsync(currentCategory, ct);
 
         var response = new UpdateCategoryResponse(
             currentCategory.Id,
@@ -172,17 +173,20 @@ public class CategoryController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
-    public async Task<Results<NoContent, ProblemHttpResult>> DeleteAsync(int id)
+    public async Task<Results<NoContent, ProblemHttpResult>> Delete(
+        int id, CancellationToken ct)
     {
-        var categoriaDeleted = await _repository.DeleteAsync(id);
+        var category = await _repository.GetAsync(c => c.Id == id, ct);
 
-        if (categoriaDeleted is null)
+        if (category is null)
         {
             return TypedResults.Problem(
                 statusCode: StatusCodes.Status404NotFound,
                 detail: $"Category with ID {id} not found."
                 );
         }
+
+        await _repository.DeleteAsync(category, ct);
 
         return TypedResults.NoContent();
     }

@@ -1,73 +1,30 @@
 using APICatalogo.Context;
 using APICatalogo.Entities;
+using APICatalogo.WebAPI.Repositories;
 using APICatalogo.WebAPI.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace APICatalogo.Repositories;
 
-internal class CategoryRepository : ICategoryRepository
+internal class CategoryRepository : Repository<Category>, ICategoryRepository
 {
-    private readonly ApiCatalogoContext _context;
-
     public CategoryRepository(ApiCatalogoContext context)
+        : base(context)
     {
-        _context = context;
     }
 
-    public async Task<Category> CreateAsync(Category category)
-    {
-        _context.Categories.Add(category);
-        await _context.SaveChangesAsync();
-
-        return category;
-    }
-
-    public async Task<Category?> GetByIdAsync(int id)
-    {
-        return await _context.Categories.FindAsync(id);
-    }
-
-    public async Task<Category?> GetCategoryWithProductsAsync(int id)
+    public async Task<Category?> GetCategoryWithProductsAsync(int id, CancellationToken ct)
     {
         return await _context.Categories
             .AsNoTracking()
             .Include(c => c.Products)
-            .FirstOrDefaultAsync(c => c.Id == id);
+            .FirstOrDefaultAsync(c => c.Id == id, ct);
     }
 
-    public async Task<List<Category>> GetAllListAsync()
+    public async Task<bool> ExistsByNameAsync(string name, CancellationToken ct)
     {
         return await _context.Categories
             .AsNoTracking()
-            .ToListAsync();
-    }
-
-    // Temporário
-    public async Task UpdateAsync(Category category)
-    {
-        _context.Entry(category).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
-
-    }
-
-    // Temporário
-    public async Task<Category?> DeleteAsync(int id)
-    {
-        var category = await _context.Categories.FindAsync(id);
-
-        if (category is null)
-            return null;
-
-        _context.Categories.Remove(category);
-        await _context.SaveChangesAsync();
-
-        return category;
-    }
-
-    public async Task<bool> ExistsByNameAsync(string name)
-    {
-        return await _context.Categories
-            .AsNoTracking()
-            .AnyAsync(category => category.Name == name);
+            .AnyAsync(category => category.Name == name, ct);
     }
 }
