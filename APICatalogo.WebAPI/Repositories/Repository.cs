@@ -1,0 +1,44 @@
+using APICatalogo.Context;
+using APICatalogo.WebAPI.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
+
+namespace APICatalogo.WebAPI.Repositories;
+
+internal class Repository<TEntity> : IRepository<TEntity> where TEntity : class
+{
+    protected readonly ApiCatalogoContext _context;
+
+    public Repository(ApiCatalogoContext context)
+    {
+        _context = context;
+    }
+
+    public async Task CreateAsync(TEntity entity, CancellationToken ct = default)
+    {
+        await _context.Set<TEntity>().AddAsync(entity, ct);
+        await _context.SaveChangesAsync(ct);
+    }
+
+    public async Task UpdateAsync(TEntity entity, CancellationToken ct = default)
+    {
+        _context.Set<TEntity>().Update(entity);
+        await _context.SaveChangesAsync(ct);
+    }
+
+    public async Task DeleteAsync(TEntity entity, CancellationToken ct = default)
+    {
+        _context.Set<TEntity>().Remove(entity);
+        await _context.SaveChangesAsync(ct);
+    }
+
+    public async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken ct = default)
+    {
+        return await _context.Set<TEntity>().ToListAsync(ct);
+    }
+
+    public async Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default)
+    {
+        return await _context.Set<TEntity>().FirstOrDefaultAsync(predicate, ct);
+    }
+}
