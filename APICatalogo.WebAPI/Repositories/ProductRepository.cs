@@ -1,5 +1,6 @@
-﻿using APICatalogo.Context;
+using APICatalogo.Context;
 using APICatalogo.Entities;
+using APICatalogo.WebAPI.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace APICatalogo.Repositories;

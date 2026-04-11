@@ -1,6 +1,6 @@
-﻿using APICatalogo.DTOs.Product;
+using APICatalogo.DTOs.Product;
 using APICatalogo.Entities;
-using APICatalogo.Repositories;
+using APICatalogo.WebAPI.Repositories.Interfaces;
 using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;

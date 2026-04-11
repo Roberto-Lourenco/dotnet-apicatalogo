@@ -1,4 +1,5 @@
-﻿using APICatalogo.Repositories;
+using APICatalogo.Repositories;
+using APICatalogo.WebAPI.Repositories.Interfaces;
 
 namespace APICatalogo.Extensions;
 

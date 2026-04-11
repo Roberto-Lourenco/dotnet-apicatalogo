@@ -1,6 +1,6 @@
-﻿using APICatalogo.Entities;
+using APICatalogo.Entities;
 
-namespace APICatalogo.Repositories;
+namespace APICatalogo.WebAPI.Repositories.Interfaces;
 
 public interface ICategoryRepository
 {
