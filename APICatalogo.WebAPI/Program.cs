@@ -17,10 +17,11 @@ var app = builder.Build();
 
 await app.UseDataSeederAsync();
 
-app.UseApplicationLocalization();
 app.UseExceptionHandler();
 app.UseStatusCodePages();
-app.UseSwaggerConfig();
+
+app.UseHsts();
+app.UseHttpsRedirection();
 
 app.UseSerilogRequestLogging(options =>
 {
@@ -31,10 +32,11 @@ app.UseSerilogRequestLogging(options =>
     };
 });
 
-app.UseHsts();
-app.UseHttpsRedirection();
+app.UseSwaggerConfig();
+app.UseApplicationLocalization();
 
 app.UseAuthorization();
+
 app.MapControllers();
 
-app.Run();
+await app.RunAsync();
