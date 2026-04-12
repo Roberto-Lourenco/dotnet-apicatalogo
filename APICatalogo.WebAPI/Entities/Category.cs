@@ -1,4 +1,4 @@
-﻿namespace APICatalogo.Entities;
+namespace APICatalogo.Entities;
 
 public sealed class Category
 {
@@ -20,5 +20,5 @@ public sealed class Category
     public string ImgUrl { get; set; }
     public DateTimeOffset CreatedAt { get; init; }
     public DateTimeOffset? UpdatedAt { get; set; }
-    public ICollection<Product>? Products { get; set; }
+    public ICollection<Product> Products { get; set; } = [];
 }

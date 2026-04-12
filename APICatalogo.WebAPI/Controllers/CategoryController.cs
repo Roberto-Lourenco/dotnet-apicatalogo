@@ -78,13 +78,6 @@ public class CategoryController : ControllerBase
     {
         var categories = await _repository.GetAllAsync();
 
-        if (categories is null || !categories.Any())
-        {
-            return TypedResults.Problem(
-                statusCode: StatusCodes.Status404NotFound,
-                detail: "No categories found to display.");
-        };
-
         var response = categories
             .Select(category =>
                 new CategoryResponse(
@@ -108,14 +101,6 @@ public class CategoryController : ControllerBase
             return TypedResults.Problem(
                 statusCode: StatusCodes.Status404NotFound,
                 detail: $"Category with ID {id} not found."
-                );
-        }
-
-        if (categories.Products is null || categories.Products.Count == 0)
-        {
-            return TypedResults.Problem(
-                statusCode: StatusCodes.Status404NotFound,
-                detail: $"Category with ID {id} has no products."
                 );
         }
 
