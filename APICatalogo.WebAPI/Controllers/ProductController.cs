@@ -13,9 +13,11 @@ namespace APICatalogo.Controllers;
 public class ProductController : ControllerBase
 {
     private readonly IProductRepository _repository;
-    public ProductController(IProductRepository repository)
+    private readonly IUnitOfWork _uow;
+    public ProductController(IProductRepository repository, IUnitOfWork uow)
     {
         _repository = repository;
+        _uow = uow;
     }
 
     [HttpPost]
@@ -36,6 +38,7 @@ public class ProductController : ControllerBase
             dto.CategoryId);
 
         await _repository.CreateAsync(product, ct);
+        await _uow.CommitAsync(ct);
 
         return TypedResults.Created();
     }
@@ -80,12 +83,11 @@ public class ProductController : ControllerBase
 
         var response = products
             .Select(product => 
-            new GetAllProductsResponse(
-                product.Id,
-                product.Name,
-                product.Price,
-                product.ImgUrl))
-            .ToList();
+                new GetAllProductsResponse(
+                    product.Id,
+                    product.Name,
+                    product.Price,
+                    product.ImgUrl)).ToList();
 
         return TypedResults.Ok(response);
     }
@@ -119,7 +121,7 @@ public class ProductController : ControllerBase
         currentProduct.CategoryId = dto.CategoryId ?? currentProduct.CategoryId;
         currentProduct.UpdatedAt = DateTimeOffset.UtcNow;
 
-        await _repository.UpdateAsync(currentProduct, ct);
+        await _uow.CommitAsync(ct);
 
         var response = new UpdateProductResponse(
             currentProduct.Id,
@@ -146,6 +148,7 @@ public class ProductController : ControllerBase
             );
 
         await _repository.DeleteAsync(product, ct);
+        await _uow.CommitAsync(ct);
 
         return TypedResults.NoContent();
     }

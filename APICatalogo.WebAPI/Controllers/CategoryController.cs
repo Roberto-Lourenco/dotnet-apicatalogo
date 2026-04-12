@@ -13,10 +13,12 @@ namespace APICatalogo.Controllers;
 public class CategoryController : ControllerBase
 {
     private readonly ICategoryRepository _repository;
+    private readonly IUnitOfWork _uow;
 
-    public CategoryController(ICategoryRepository repository)
+    public CategoryController(ICategoryRepository repository, IUnitOfWork uow)
     {
         _repository = repository;
+        _uow = uow;
     }
 
     [HttpPost]
@@ -43,6 +45,7 @@ public class CategoryController : ControllerBase
         );
 
         await _repository.CreateAsync(category, ct);
+        await _uow.CommitAsync(ct);
 
         return TypedResults.Created();
     }
@@ -160,7 +163,7 @@ public class CategoryController : ControllerBase
         currentCategory.ImgUrl = dto.ImgUrl ?? currentCategory.ImgUrl;
         currentCategory.UpdatedAt = DateTimeOffset.UtcNow;
 
-        await _repository.UpdateAsync(currentCategory, ct);
+        await _uow.CommitAsync(ct);
 
         var response = new UpdateCategoryResponse(
             currentCategory.Id,
@@ -187,6 +190,7 @@ public class CategoryController : ControllerBase
         }
 
         await _repository.DeleteAsync(category, ct);
+        await _uow.CommitAsync(ct);
 
         return TypedResults.NoContent();
     }

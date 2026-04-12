@@ -17,19 +17,16 @@ internal class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     public async Task CreateAsync(TEntity entity, CancellationToken ct = default)
     {
         _context.Set<TEntity>().Add(entity);
-        await _context.SaveChangesAsync(ct);
     }
 
     public async Task UpdateAsync(TEntity entity, CancellationToken ct = default)
     {
         _context.Set<TEntity>().Update(entity);
-        await _context.SaveChangesAsync(ct);
     }
 
     public async Task DeleteAsync(TEntity entity, CancellationToken ct = default)
     {
         _context.Set<TEntity>().Remove(entity);
-        await _context.SaveChangesAsync(ct);
     }
 
     public async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken ct = default)
