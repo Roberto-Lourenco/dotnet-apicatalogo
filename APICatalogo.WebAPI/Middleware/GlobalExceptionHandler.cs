@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
+using APICatalogo.WebAPI.Repositories.Interfaces;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
 namespace APICatalogo.Middleware;
@@ -20,6 +21,21 @@ public class GlobalExceptionHandler : IExceptionHandler
         CancellationToken cancellationToken)
     {
         _logger.LogError(exception, "Unexpected Error: {Message}", exception.Message);
+
+        var uow = httpContext.RequestServices.GetService<IUnitOfWork>();
+
+        if (uow != null)
+        {
+            try
+            {
+                await uow.RollbackAsync(cancellationToken);
+                _logger.LogInformation("Transaction rollback executed successfully in the GlobalExceptionHandler.");
+            }
+            catch (Exception rollbackEx)
+            {
+                _logger.LogCritical(rollbackEx, "Critical failure while attempting to execute the transaction rollback in the GlobalExceptionHandler.");
+            }
+        }
 
         var problemDetails = new ProblemDetails
         {
