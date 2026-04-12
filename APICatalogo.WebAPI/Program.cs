@@ -1,4 +1,5 @@
 using APICatalogo.Extensions;
+using APICatalogo.WebAPI.Extensions;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,8 @@ builder.Services
     .AddSwaggerConfig();
 
 var app = builder.Build();
+
+await app.UseDataSeederAsync();
 
 app.UseApplicationLocalization();
 app.UseExceptionHandler();
