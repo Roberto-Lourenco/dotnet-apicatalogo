@@ -1,4 +1,4 @@
-﻿using APICatalogo.Entities;
+using APICatalogo.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -27,10 +27,5 @@ internal sealed class CategoryConfiguration : IEntityTypeConfiguration<Category>
 
         builder.Property(c => c.UpdatedAt)
             .HasColumnType("timestamp with time zone");
-
-        builder.HasMany(c => c.Products)
-            .WithOne(p => p.Category)
-            .HasForeignKey(p => p.CategoryId)
-            .OnDelete(DeleteBehavior.Cascade);
     }
 }

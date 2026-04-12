@@ -1,4 +1,4 @@
-﻿using APICatalogo.Entities;
+using APICatalogo.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -39,7 +39,7 @@ internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.HasOne(p => p.Category)
             .WithMany(c => c.Products)
             .HasForeignKey(p => p.CategoryId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasIndex(p => p.Name);
     }
