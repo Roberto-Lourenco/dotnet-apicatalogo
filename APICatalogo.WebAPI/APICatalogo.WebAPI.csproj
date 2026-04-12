@@ -16,13 +16,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="TempSerilog\**" />
-    <Content Remove="TempSerilog\**" />
-    <EmbeddedResource Remove="TempSerilog\**" />
-    <None Remove="TempSerilog\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Bogus" Version="35.6.5" />
     <PackageReference Include="EFCore.NamingConventions" Version="8.0.3" />
     <PackageReference Include="FluentValidation" Version="12.1.1" />
@@ -41,11 +34,6 @@
   <ItemGroup>
     <Folder Include="logs\dev\" />
     <Folder Include="logs\prod\" />
-    <Folder Include="Migrations\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Middleware\GlobalExceptionHandler.cs" />
   </ItemGroup>
 
 </Project>
