@@ -1,6 +1,6 @@
-﻿using APICatalogo.Middleware;
+using APICatalogo.Middleware;
 
-namespace APICatalogo.Extensions;
+namespace APICatalogo.WebAPI.Extensions;
 
 public static class GlobalExceptionHandlerExtensions
 {

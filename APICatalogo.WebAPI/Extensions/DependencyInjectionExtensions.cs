@@ -1,7 +1,7 @@
 using APICatalogo.Repositories;
 using APICatalogo.WebAPI.Repositories.Interfaces;
 
-namespace APICatalogo.Extensions;
+namespace APICatalogo.WebAPI.Extensions;
 
 public static class DependencyInjectionExtensions
 {

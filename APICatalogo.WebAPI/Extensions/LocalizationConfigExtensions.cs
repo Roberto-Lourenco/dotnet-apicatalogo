@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 
-namespace APICatalogo.Extensions;
+namespace APICatalogo.WebAPI.Extensions;
 
 public static class LocalizationConfigExtensions
 {

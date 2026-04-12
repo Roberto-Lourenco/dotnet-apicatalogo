@@ -1,4 +1,3 @@
-using APICatalogo.Extensions;
 using APICatalogo.WebAPI.Extensions;
 using Serilog;
 

@@ -1,7 +1,7 @@
-﻿using APICatalogo.Context;
+using APICatalogo.Context;
 using Microsoft.EntityFrameworkCore;
 
-namespace APICatalogo.Extensions;
+namespace APICatalogo.WebAPI.Extensions;
 
 public static class DatabaseConfigExtensions
 {

@@ -1,8 +1,7 @@
-﻿using FluentValidation;
+using FluentValidation;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-namespace APICatalogo.Extensions;
+namespace APICatalogo.WebAPI.Extensions;
 
 public static class ApiConfigurationExtensions
 {
