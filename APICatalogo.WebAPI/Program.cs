@@ -7,6 +7,7 @@ builder.Host.UseSerilog((context, config) =>
     config.ReadFrom.Configuration(context.Configuration));
 
 builder.Services
+    .AddGlobalErrorHandler()
     .AddDatabaseConfig(builder.Configuration)
     .AddApiConfiguration()
     .AddRepositories()
