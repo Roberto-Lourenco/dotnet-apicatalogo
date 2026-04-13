@@ -31,7 +31,7 @@ internal class Repository<TEntity> : IRepository<TEntity> where TEntity : class
 
     public async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken ct = default)
     {
-        return await _context.Set<TEntity>().ToListAsync(ct);
+        return await _context.Set<TEntity>().AsNoTracking().ToListAsync(ct);
     }
 
     public async Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default)
