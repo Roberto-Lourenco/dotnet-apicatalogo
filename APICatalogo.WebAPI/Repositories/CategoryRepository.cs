@@ -18,6 +18,7 @@ internal class CategoryRepository : Repository<Category>, ICategoryRepository
         return await _context.Categories
             .AsNoTracking()
             .Include(c => c.Products)
+            .AsSplitQuery()
             .FirstOrDefaultAsync(c => c.Id == id, ct);
     }
 
