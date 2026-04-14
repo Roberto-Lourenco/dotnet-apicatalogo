@@ -1,6 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
-namespace APICatalogo.DTOs.Product;
+namespace APICatalogo.WebAPI.DTOs.Products;
+
 public sealed record UpdateProductRequest(
     [Required(ErrorMessage = "O ID do produto é obrigatório.")]
     int Id,
@@ -21,4 +22,4 @@ public sealed record UpdateProductRequest(
     int? AvailableQuantity,
 
     int? CategoryId
-    );
+);

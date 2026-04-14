@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace APICatalogo.DTOs.Product;
+namespace APICatalogo.WebAPI.DTOs.Products;
 
 public sealed record CreateProductRequest(
     string Name,
@@ -8,5 +6,4 @@ public sealed record CreateProductRequest(
     decimal Price,
     string ImgUrl,
     int AvailableQuantity,
-    int CategoryId
-);
+    int CategoryId);

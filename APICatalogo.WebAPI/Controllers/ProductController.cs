@@ -1,5 +1,5 @@
-using APICatalogo.DTOs.Product;
 using APICatalogo.Entities;
+using APICatalogo.WebAPI.DTOs.Products;
 using APICatalogo.WebAPI.Repositories.Interfaces;
 using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -44,7 +44,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    public async Task<Results<Ok<FullContentProductResponse>, ProblemHttpResult>> GetById(int id, CancellationToken ct)
+    public async Task<Results<Ok<ProductResponse>, ProblemHttpResult>> GetById(int id, CancellationToken ct)
     {
         var product = await _repository.GetAsync(p => p.Id == id, ct);
 
@@ -56,16 +56,7 @@ public class ProductController : ControllerBase
                 );
         }
 
-        var response = new FullContentProductResponse(
-            product.Id,
-            product.Name,
-            product.Description,
-            product.Price,
-            product.ImgUrl,
-            product.AvailableQuantity,
-            product.CreatedAt,
-            product.CategoryId
-            );
+        var response = ProductResponse.MapToDto(product);
 
         return TypedResults.Ok(response);
     }
@@ -73,7 +64,7 @@ public class ProductController : ControllerBase
     [HttpGet]
     public async Task<Results<Ok<List<GetAllProductsResponse>>, ProblemHttpResult>> GetAll(CancellationToken ct)
     {
-        var products =  await _repository.GetAllAsync(ct);
+        var products = await _repository.GetAllAsync(ct);
 
         if (products is null || !products.Any())
             return TypedResults.Problem(
@@ -81,13 +72,7 @@ public class ProductController : ControllerBase
                 detail: "No products found to display."
                 );
 
-        var response = products
-            .Select(product => 
-                new GetAllProductsResponse(
-                    product.Id,
-                    product.Name,
-                    product.Price,
-                    product.ImgUrl)).ToList();
+        var response = GetAllProductsResponse.MapToDto(products).ToList();
 
         return TypedResults.Ok(response);
     }
@@ -123,15 +108,7 @@ public class ProductController : ControllerBase
 
         await _uow.CommitAsync(ct);
 
-        var response = new UpdateProductResponse(
-            currentProduct.Id,
-            currentProduct.Name,
-            currentProduct.Price,
-            currentProduct.ImgUrl,
-            currentProduct.AvailableQuantity,
-            currentProduct.CategoryId,
-            currentProduct.UpdatedAt.Value);
-
+        var response = UpdateProductResponse.MapToDto(currentProduct);
 
         return TypedResults.Ok(response);
     }

@@ -1,5 +1,5 @@
-using APICatalogo.DTOs.Category;
 using APICatalogo.Entities;
+using APICatalogo.WebAPI.DTOs.Categories;
 using APICatalogo.WebAPI.Repositories.Interfaces;
 using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -63,12 +63,7 @@ public class CategoryController : ControllerBase
                 );
         }
 
-        var response = new CategoryResponse(
-            result.Id,
-            result.Name,
-            result.ImgUrl,
-            result.CreatedAt
-        );
+        var response = CategoryResponse.MapToDto(result);
 
         return TypedResults.Ok(response);
     }
@@ -78,14 +73,7 @@ public class CategoryController : ControllerBase
     {
         var categories = await _repository.GetAllAsync();
 
-        var response = categories
-            .Select(category =>
-                new CategoryResponse(
-                    category.Id,
-                    category.Name,
-                    category.ImgUrl,
-                    category.CreatedAt))
-                .ToList();
+        var response = CategoryResponse.MapToDto(categories).ToList();
 
         return TypedResults.Ok(response);
     }
@@ -104,17 +92,7 @@ public class CategoryController : ControllerBase
                 );
         }
 
-        var response = new GetCategoryWithProductsResponse(
-            categories.Id,
-            categories.Name,
-            categories.ImgUrl,
-            categories.Products.Select(product => new GetProductByCategoryResponse(
-                product.Id,
-                product.Name,
-                product.Price,
-                product.ImgUrl,
-                product.AvailableQuantity,
-                product.CreatedAt)).ToList());
+        var response = GetCategoryWithProductsResponse.MapToDto(categories);
 
         return TypedResults.Ok(response);
     }
@@ -150,12 +128,7 @@ public class CategoryController : ControllerBase
 
         await _uow.CommitAsync(ct);
 
-        var response = new UpdateCategoryResponse(
-            currentCategory.Id,
-            currentCategory.Name,
-            currentCategory.ImgUrl,
-            currentCategory.UpdatedAt.Value
-        );
+        var response = UpdateCategoryResponse.MapToDto(currentCategory);
 
         return TypedResults.Ok(response);
     }

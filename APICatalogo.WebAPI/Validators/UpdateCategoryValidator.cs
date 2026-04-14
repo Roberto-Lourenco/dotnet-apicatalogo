@@ -1,4 +1,4 @@
-﻿using APICatalogo.DTOs.Category;
+using APICatalogo.WebAPI.DTOs.Categories;
 using FluentValidation;
 
 namespace APICatalogo.Validators;
